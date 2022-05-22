@@ -1,0 +1,8 @@
+server:
+  port: 8082
+logging:
+  file:
+    max-size: 50MB
+    name: app.log
+  level:
+    ROOT: INFO
