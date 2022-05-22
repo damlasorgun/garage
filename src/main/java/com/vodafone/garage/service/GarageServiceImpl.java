@@ -1,6 +1,6 @@
 package com.vodafone.garage.service;
 
-import com.vodafone.garage.factory.VehicleFoctory;
+import com.vodafone.garage.factory.VehicleFactory;
 import com.vodafone.garage.model.Vehicle;
 import com.vodafone.garage.util.GarageResult;
 import com.vodafone.garage.dto.VehicleDto;
@@ -21,7 +21,7 @@ public class GarageServiceImpl implements IGarageService {
 
   @Override
   public GarageResult allocateVehicleToGarage(VehicleDto vehicleDto) {
-    Vehicle vehicle = VehicleFoctory.createVehicle(new VehicleDto(vehicleDto.getVehicleType().trim(),
+    Vehicle vehicle = VehicleFactory.createVehicle(new VehicleDto(vehicleDto.getVehicleType().trim(),
         vehicleDto.getPlate().trim(), vehicleDto.getColour().trim()));
     if (vehicle == null) {
       logger.error("Park error Undefined vehicle type = "+vehicleDto.getVehicleType());

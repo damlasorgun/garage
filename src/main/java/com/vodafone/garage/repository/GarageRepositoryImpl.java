@@ -14,8 +14,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class GarageRepositoryImpl implements IGarageRepository {
   private static Map<Integer, Integer> garageSlotMap = new TreeMap<>();
-  private static List<Vehicle> vehicles = new ArrayList<>();
-  private static List<Ticket> tickets = new ArrayList<>();
+  private static List<Vehicle> vehicleList = new ArrayList<>();
+  private static List<Ticket> ticketList = new ArrayList<>();
 
   public GarageRepositoryImpl() {
     for (int i = 1; i < 11; i++) {
@@ -32,15 +32,15 @@ public class GarageRepositoryImpl implements IGarageRepository {
 
         for (int i = entry.getKey(); i < vehicle.getSlotsSize() + entry.getKey(); i++) {
 
-          if (i == vehicle.getSlotsSize() + entry.getKey() - 1 && i != 10) {
+          if (i == vehicle.getSlotsSize() + entry.getKey() - 1 && i != garageSlotMap.size()) {
             garageSlotMap.replace(i + 1, GarageStatusEnum.SLOT_SPACE.getSlotValue());
           }
           garageSlotMap.replace(i, GarageStatusEnum.SLOT_FULL.getSlotValue());
           vehicle.getSlots().add(i);
         }
 
-        vehicles.add(vehicle);
-        tickets.add(new Ticket(vehicle.getPlate(), vehicle));
+        vehicleList.add(vehicle);
+        ticketList.add(new Ticket(vehicle.getPlate(), vehicle));
         garageResult = GarageResult.builder()
             .message(new StringBuilder()
                 .append("Allocated ")
@@ -49,7 +49,7 @@ public class GarageRepositoryImpl implements IGarageRepository {
                 .append(vehicle.getSlotsSize() > 1 ? "s" : "")
                 .toString())
             .success(true)
-            .vehicleId(vehicles.size())
+            .vehicleId(vehicleList.size())
             .build();
         break;
       } else {
@@ -65,18 +65,18 @@ public class GarageRepositoryImpl implements IGarageRepository {
 
   @Override
   public GarageResult leaveVehicleFromGarage(int parkId) {
-    if (parkId <= vehicles.size()) {
-      Vehicle vehicle = vehicles.get(parkId - 1);
+    if (parkId <= vehicleList.size()) {
+      Vehicle vehicle = vehicleList.get(parkId - 1);
 
       for (int i = 0; i < vehicle.getSlotsSize(); i++) {
         garageSlotMap.replace(vehicle.getSlots().get(i), GarageStatusEnum.SLOT_FREE.getSlotValue());
-        if (i == vehicle.getSlotsSize() - 1 && vehicle.getSlots().get(i) != 10) {
+        if (i == vehicle.getSlotsSize() - 1 && vehicle.getSlots().get(i) != garageSlotMap.size()) {
           garageSlotMap.replace(vehicle.getSlots().get(i) + 1, GarageStatusEnum.SLOT_FREE.getSlotValue());
         }
       }
 
-      vehicles.remove(parkId - 1);
-      tickets.remove(parkId - 1);
+      vehicleList.remove(parkId - 1);
+      ticketList.remove(parkId - 1);
 
       return GarageResult.builder()
           .vehicleId(parkId)
@@ -93,11 +93,11 @@ public class GarageRepositoryImpl implements IGarageRepository {
 
   @Override
   public GarageResult getStatusGarage() {
-    if (vehicles.isEmpty()) {
+    if (vehicleList.isEmpty()) {
       return GarageResult.builder().message("Garage is empty.").success(true).build();
     }
     StringBuilder stringBuilder = new StringBuilder();
-    for (Vehicle vehicle : vehicles)
+    for (Vehicle vehicle : vehicleList)
       stringBuilder
           .append(vehicle.getPlate()).append(" ")
           .append(vehicle.getColour()).append(" [")
@@ -118,7 +118,7 @@ public class GarageRepositoryImpl implements IGarageRepository {
       if (garageSlotMap.get(i) != GarageStatusEnum.SLOT_FREE.getSlotValue())
         return false;
       if ((i != 1 && garageSlotMap.get(i - 1) == 1)
-          || (i != 10 && garageSlotMap.get(i + 1) == 1)) {
+          || (i != garageSlotMap.size() && garageSlotMap.get(i + 1) == 1)) {
         return false;
       }
 

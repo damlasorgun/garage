@@ -7,7 +7,7 @@ import com.vodafone.garage.model.Vehicle;
 import com.vodafone.garage.dto.VehicleDto;
 import java.util.Locale;
 
-public class VehicleFoctory {
+public class VehicleFactory {
   public static Vehicle createVehicle(VehicleDto vehicleDto) {
     if (vehicleDto.getVehicleType().toUpperCase(Locale.ROOT).equals("CAR")){
       return new Car(vehicleDto.getColour(), vehicleDto.getPlate());
